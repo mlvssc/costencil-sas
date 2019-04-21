@@ -8,7 +8,7 @@
 #include "mm.h"
 #include "cos.h"
 
-#ifdef CUDAUM
+#ifdef USE_CUDA
 
 __global__ void gpu_kernel(REAL *afrom, REAL *ato, long nx, long ny, long lz0, long lz1)
 {

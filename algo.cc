@@ -134,7 +134,7 @@ int base(long t0, long t1, vec3 v0, vec3 v1, vec3 rv0, vec3 rv1)
     {
       int tid = 0;
       int nt = 1;
-#if defined OMPTASK || defined OMPFOR
+#ifdef USE_OMP
       tid = omp_get_thread_num();
       nt = omp_get_num_threads();
 #endif
@@ -252,18 +252,18 @@ int spacecutDim(long t0, long t1, vec3 v0, vec3 v1, vec3 rv0, vec3 rv1, char dim
 #endif
 
       // left
-#ifdef OMPTASK
+#ifdef USE_OMPTASK
 #pragma omp task
 #endif
       recTB(t0, t1, v0, vec3mod(v1, dim, zm0), rv0, rv1);
 
-#ifdef OMPTASK
+#ifdef USE_OMPTASK
 #pragma omp task
 #endif
       // right 
       recTB(t0, t1, vec3mod(v0, dim, zm1), v1, rv0, rv1);
 
-#ifdef OMPTASK
+#ifdef USE_OMPTASK
 #pragma omp taskwait
 #endif
 
@@ -285,18 +285,18 @@ int spacecutDim(long t0, long t1, vec3 v0, vec3 v1, vec3 rv0, vec3 rv1, char dim
       recTB(t0, t1, vec3mod(v0, dim, zm0), vec3mod(v1, dim, zm1), rcv0, rcv1);
 
       // left
-#ifdef OMPTASK
+#ifdef USE_OMPTASK
 #pragma omp task
 #endif
       recTB(t0, t1, v0, vec3mod(v1, dim, zm0), rv0, rv1);
 
-#ifdef OMPTASK
+#ifdef USE_OMPTASK
 #pragma omp task
 #endif
       // right
       recTB(t0, t1, vec3mod(v0, dim, zm1), v1, rv0, rv1);
 
-#ifdef OMPTASK
+#ifdef USE_OMPTASK
 #pragma omp taskwait
 #endif
 
@@ -410,10 +410,10 @@ int recTB(long t0, long t1, vec3 v0, vec3 v1, vec3 rv0, vec3 rv1)
 
 int algo(long t0, long t1, vec3 v0, vec3 v1)
 {
-#ifdef OMPTASK
+#ifdef USE_OMPTASK
 #pragma omp parallel
 #pragma omp single
-#endif // OMPTASK
+#endif // USE_OMPTASK
   recTB(t0, t1, v0, v1, vec3(1, 1, 1), vec3(-1, -1, -1));
 
   return 0;

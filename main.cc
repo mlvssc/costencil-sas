@@ -162,13 +162,14 @@ int main(int argc, char *argv[])
     n3d = vec3(atol(argv[1]), atol(argv[2]), atol(argv[3]));
   }
 
-  mm_init();
-
   printf("Cache Oblivious 3D-Stencil sample (Single Address Space version)\n");
   printf("  Compiled for [%s]\n", COSID);
   printf("nx=%ld, ny=%ld, nz=%ld, nt=%d, rec %s, bt=%d, para=%s, divdims=%d, stopsize=%ldMiB\n",
 	 n3d.x, n3d.y, n3d.z, nt, (recflag)?"USED":"UNUSED", bt, (paraflag)?"USED":"UNUSED",
 	 divdims, stopsizemb);
+
+  mm_init();
+
   init();
 
   // main computation

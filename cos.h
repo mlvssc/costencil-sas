@@ -3,10 +3,30 @@
 #include <sys/time.h>
 
 #ifdef CUDAUM
+#  define COSID "CUDAUM"
+#  define USE_CUDA
+#elif defined MCUDAUM
+#  define COSID "MCUDAUM"
+#  define USE_CUDA
+#  define USE_OMP
+#  define USE_OMPTASK
+#elif defined OMPFOR
+#  define COSID "OMPFOR"
+#  define USE_OMP
+#elif defined OMPTASK
+#  define COSID "OMPTASK"
+#  define USE_OMP
+#  define USE_OMPTASK
+#else
+#  error USE VALID Makefile
+#endif
+
+
+#ifdef USE_CUDA
 #include <cuda_runtime.h>
 #endif
 
-#if defined OMPFOR || defined OMPTASK
+#ifdef USE_OMP
 #include <omp.h>
 #endif
 
@@ -22,21 +42,11 @@
 #define VERBOSE 10
 //#define VERBOSE 0
 
-#ifdef CUDAUM
-#  define COSID "CUDAUM"
-#elif defined OMPFOR
-#  define COSID "OMPFOR"
-#elif defined OMPTASK
-#  define COSID "OMPTASK"
-#else
-#  error USE VALID Makefile
-#endif
-
 /* walltime clock (sync if GPU is used) */
 static double Wtime()
 {
   struct timeval tv;
-#ifdef CUDAUM
+#ifdef USE_CUDA
   cudaDeviceSynchronize();
 #endif
   gettimeofday(&tv, NULL);
@@ -46,7 +56,7 @@ static double Wtime()
 // to be defined in compXXX.cX
 int update(REAL *afrom, REAL *ato, vec3 v0, vec3 v1);
 
-// defined in algoXXX.cc
+// defined in algo.cc
 int algo(long t0, long t1, vec3 c0, vec3 c1);
 
 
