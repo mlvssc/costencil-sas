@@ -6,6 +6,10 @@
 #include <cuda_runtime.h>
 #endif
 
+#if defined OMPFOR || defined OMPTASK
+#include <omp.h>
+#endif
+
 #include "vec3.h"
 
 #if 1

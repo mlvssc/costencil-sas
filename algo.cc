@@ -69,6 +69,7 @@ int getAccessRegion(long t0, long t1, vec3 v0, vec3 v1, vec3 vz0, vec3 vz1,
     
 int base(long t0, long t1, vec3 v0, vec3 v1, vec3 rv0, vec3 rv1)
 {
+  double st, et;
   // base case
 #if VERBOSE >= 20
   printf("[base] START t=[%d,%d], [(%ld,%ld,%ld), (%ld,%ld,%ld))\n", t0, t1,
@@ -101,7 +102,8 @@ int base(long t0, long t1, vec3 v0, vec3 v1, vec3 rv0, vec3 rv1)
   }
 
   // now [z0z, z1z) are accessible by GPU on darrays
-  
+
+  st = Wtime();
   long it;
   for (it = t0; it < t1; it++) {
     vec3 v0a = adjustindexW(it+1, t1, v0, rv0); // lower index
@@ -121,7 +123,8 @@ int base(long t0, long t1, vec3 v0, vec3 v1, vec3 rv0, vec3 rv1)
   }
 
   // print periodically
-  double wt = Wtime();
+  et = Wtime();
+  double wt = et;
 #if VERBOSE >= 10
 #if VERBOSE >= 30
   if (1)
@@ -129,8 +132,15 @@ int base(long t0, long t1, vec3 v0, vec3 v1, vec3 rv0, vec3 rv1)
   if (wt > logtime+1.0)
 #endif
     {
-      printf("[base] END: t=[%d,%d], [(%ld,%ld,%ld), (%ld,%ld,%ld))\n", t0, t1,
-	     v0.x, v0.y, v0.z, v1.x, v1.y, v1.z);
+      int tid = 0;
+      int nt = 1;
+#if defined OMPTASK || defined OMPFOR
+      tid = omp_get_thread_num();
+      nt = omp_get_num_threads();
+#endif
+      printf("[base] END@thr%d/%d: t=[%d,%d], [(%ld,%ld,%ld), (%ld,%ld,%ld)) -> %.3lfsec\n", 
+	     tid, nt, t0, t1,
+	     v0.x, v0.y, v0.z, v1.x, v1.y, v1.z, et-st);
       logtime = wt;
     }
 #endif
@@ -247,6 +257,9 @@ int spacecutDim(long t0, long t1, vec3 v0, vec3 v1, vec3 rv0, vec3 rv1, char dim
 #endif
       recTB(t0, t1, v0, vec3mod(v1, dim, zm0), rv0, rv1);
 
+#ifdef OMPTASK
+#pragma omp task
+#endif
       // right 
       recTB(t0, t1, vec3mod(v0, dim, zm1), v1, rv0, rv1);
 
@@ -277,6 +290,9 @@ int spacecutDim(long t0, long t1, vec3 v0, vec3 v1, vec3 rv0, vec3 rv1, char dim
 #endif
       recTB(t0, t1, v0, vec3mod(v1, dim, zm0), rv0, rv1);
 
+#ifdef OMPTASK
+#pragma omp task
+#endif
       // right
       recTB(t0, t1, vec3mod(v0, dim, zm1), v1, rv0, rv1);
 
