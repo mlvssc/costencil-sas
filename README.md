@@ -7,7 +7,7 @@ under construction
 Toshio Endo. Applying Recursive Temporal Blocking for Stencil Computations to Deeper Memory Hierarchy. In proceedings of the 7th IEEE Non-Volatile Memory Systems and Applications Symposium (NVMSA 2018). Aug 2018. 
 [DOI: 10.1109/NVMSA.2018.00016]
 
-(see docs/ directory)
+(see [docs/](./docs/) directory)
 
 ## Contact
 
